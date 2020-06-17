@@ -1,0 +1,102 @@
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+html, body, main {
+	width: 100%;
+	height: 100%;
+}
+
+main {
+	display: -webkit-flex;
+	display: -moz-flex;
+	display: -ms-flex;
+	display: -o-flex;
+	display: flex;
+	justify-content: center;
+	-ms-align-items: center;
+	align-items: center;
+}
+
+form {
+	display: grid;
+	position: relative;
+}
+
+label > span {
+    position: absolute;
+    top: -15px;
+    left: 12px;
+    background-color: #fff;
+    padding: 5px;
+}
+
+input {
+	padding: 10px;
+	border: none;
+	outline: none;
+}
+
+#lang {
+	position: absolute;
+    top: 100%;
+    width: 100%;
+	display: none;
+	max-height: 200px;
+    overflow-y: auto;
+    box-shadow: 0 0 10px 0px #ccc;
+    border-radius: 5px;
+}
+
+#lang > div {
+	padding: 10px;
+	cursor: pointer;
+}
+
+#lang > div:hover {
+	background-color: rgba(0, 0, 0, .1);
+}
+
+#selected-lang {
+	border: 1px solid rgb(180, 180, 180);
+	border-radius: 2px;
+}
+
+#selected-lang > div {
+	display: flex;
+    flex-wrap: wrap;
+    max-width: 400px;
+}
+
+#selected-lang > div > div {
+	margin: 10px 5px;
+	padding: 5px;
+	border: 1px solid rgb(232, 232, 232);
+	background-color: rgba(213, 232, 251, 0.35);
+    color: #707070;
+}
+
+#selected-lang > div > div > span {
+	cursor: pointer;
+}
+
+#selected-lang > div > div > span:hover {
+	color: #96c9fb;
+	transition-duration: .1s;
+}
+
+
+#lang.show {
+	display: block;
+}
+
+#selected-lang.focus {
+	box-shadow: 0 0 0 2px rgba(24, 144, 255, .2);
+	border-color: rgb(64, 169, 255);
+}
+
+label > span.focus {
+	color: rgb(64, 169, 255);
+}
