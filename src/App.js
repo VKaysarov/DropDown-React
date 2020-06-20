@@ -4,7 +4,7 @@ class NameForm extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {value: '', selectedLang: [], langList: [{ id: 0, value: 'Русский' },
+    this.state = {arrowIndex: 0, value: '', selectedLang: [], langList: [{ id: 0, value: 'Русский' },
                                                           { id: 1, value: 'Английский' },
                                                           { id: 2, value: 'Абхазкий' },
                                                           { id: 3, value: 'Японский' },
@@ -18,6 +18,57 @@ class NameForm extends React.Component {
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleDelete = this.handleDelete.bind(this);
+    this.escFunction = this.escFunction.bind(this);
+    this.handleMouseOver = this.handleMouseOver.bind(this);
+    this.handleMouseOut = this.handleMouseOut.bind(this);
+  }
+
+  escFunction(event) {
+    if(event.code == "Escape") {
+      document.querySelector('#lang').classList.remove('show')
+    }
+
+    if(event.code == "ArrowDown") {
+      this.setState(prevState => ({ arrowIndex: prevState.arrowIndex + 1 }));
+      let index = this.state.arrowIndex
+      if (index < this.state.langList.length) {
+        console.log(index)
+        document.querySelector('#lang > div:nth-child(' + index + ')').classList.add('active');
+
+        if (index != 1) {
+          index = index - 1
+          document.querySelector('#lang > div:nth-child(' + index + ')').classList.remove('active');
+        }
+
+      }
+    }
+
+    if(event.code == "ArrowUp") {
+
+      let index = this.state.arrowIndex
+      if (index > 0) {
+        console.log(index)
+        document.querySelector('#lang > div:nth-child(' + index + ')').classList.remove('active');
+        
+        this.setState(prevState => ({ arrowIndex: prevState.arrowIndex - 1 }));
+
+        if (index != 1) {
+          index = index - 1
+          document.querySelector('#lang > div:nth-child(' + index + ')').classList.add('active');
+        }
+      }
+    }
+
+    console.log(this.state.arrowIndex + ' ист')
+
+  }
+
+  componentDidMount(){
+    document.addEventListener("keydown", this.escFunction, false);
+  }
+
+  componentWillUnmount(){
+    document.removeEventListener("keydown", this.escFunction, false);
   }
 
   handleChange(event) {
@@ -68,17 +119,45 @@ class NameForm extends React.Component {
     })
   }
 
+  handleMouseOver(item) {
+    // let index = this.state.arrowIndex
+    let index = 4
+    document.querySelector('#lang > div:nth-child(' + index + ')').classList.add('active');
+  }
+
+  handleMouseOut(item) {
+    // let index = this.state.arrowIndex
+    let index = 4
+    document.querySelector('#lang > div:nth-child(' + index + ')').classList.remove('active');
+    console.log('out')
+  }
+
   render() {
     return (
       <form onSubmit={this.handleSubmit}>
-        <label htmlFor="dropdown">
-        <span>Выберите язык:</span> 
-        <div id="selected-lang">
-          <SelectedList handleDelete={this.handleDelete} list={this.state.selectedLang} />
-          <input type="text" id="dropdown" value={this.state.value} onChange={this.handleChange} onFocus={this.handleFocus} />
-        </div>
-        </label>
-        <DataList handleSubmit={this.handleSubmit} value={this.state.value} langList={this.state.langList} />
+          <label htmlFor="dropdown">
+              <span>Выберите язык:</span> 
+              <div id="selected-lang">
+                  <SelectedList 
+                    handleDelete={this.handleDelete} 
+                    list={this.state.selectedLang}
+                  />
+                  <input 
+                    type="text"
+                    id="dropdown"
+                    value={this.state.value}
+                    onChange={this.handleChange}
+                    onFocus={this.handleFocus}
+                  />
+              </div>
+          </label>
+          <DataList 
+            handleSubmit={this.handleSubmit}
+            handleMouseOver={this.handleMouseOver}
+            handleMouseOut={this.handleMouseOut}
+            value={this.state.value}
+            langList={this.state.langList} 
+          />
       </form>
     );
   }
@@ -91,8 +170,11 @@ function SelectedList(props) {
     props.handleDelete(item);
   }
 
+
   const langList = props.list.map((item) =>
-    <div key={item.id}>{item.value} <span onClick={(e) => handleClick(item, e)}>✖</span></div>
+    <div key={item.id}>
+      {item.value} <span onClick={(e) => handleClick(item, e)}>✖</span>
+    </div>
   )
 
   return <div>{langList}</div>
@@ -104,6 +186,14 @@ function DataList(props) {
     props.handleSubmit(item);
   }
 
+  function handleMouseOver(item, e) {
+    props.handleMouseOver(item)
+    console.log("hover")
+  }
+
+  function handleMouseOut(item, e) {
+    props.handleMouseOut(item)
+  }
 
   let variable = []
   let filterVariable = []
@@ -119,7 +209,14 @@ function DataList(props) {
   // const filterVariable = variable.filter((item) => re.test(item))
                     
   const listItems = filterVariable.map((item) =>
-    <div key={item.id} onClick={(e) => handleClick(item, e)}>{item.value}</div>
+    <div
+      key={item.id}
+      onClick={(e) => handleClick(item, e)}
+      onMouseOver={(e) => handleMouseOver(item, e)}
+      onMouseOut={(e) => handleMouseOut(item, e)}
+    >
+        {item.value}
+    </div>
   )
 
   return <div id="lang">{listItems}</div>

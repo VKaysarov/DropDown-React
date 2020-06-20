@@ -40,7 +40,7 @@ input {
 }
 
 #lang {
-	position: absolute;
+	/*position: absolute;*/
     top: 100%;
     width: 100%;
 	display: none;
@@ -55,7 +55,7 @@ input {
 	cursor: pointer;
 }
 
-#lang > div:hover {
+#lang .active {
 	background-color: rgba(0, 0, 0, .1);
 }
 

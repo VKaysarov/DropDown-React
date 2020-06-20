@@ -16,14 +16,70 @@ var NameForm = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (NameForm.__proto__ || Object.getPrototypeOf(NameForm)).call(this, props));
 
-    _this.state = { value: '', selectedLang: [], langList: [{ id: 0, value: 'Русский' }, { id: 1, value: 'Английский' }, { id: 2, value: 'Абхазкий' }, { id: 3, value: 'Японский' }, { id: 4, value: 'Китайский' }, { id: 5, value: 'эскимосский' }, { id: 6, value: 'эсперанто' }, { id: 7, value: 'эстонский' }, { id: 8, value: 'югский' }, { id: 9, value: 'юкагирский' }, { id: 10, value: 'якутский' }] };
+    _this.state = { arrowIndex: 0, value: '', selectedLang: [], langList: [{ id: 0, value: 'Русский' }, { id: 1, value: 'Английский' }, { id: 2, value: 'Абхазкий' }, { id: 3, value: 'Японский' }, { id: 4, value: 'Китайский' }, { id: 5, value: 'эскимосский' }, { id: 6, value: 'эсперанто' }, { id: 7, value: 'эстонский' }, { id: 8, value: 'югский' }, { id: 9, value: 'юкагирский' }, { id: 10, value: 'якутский' }] };
     _this.handleChange = _this.handleChange.bind(_this);
     _this.handleSubmit = _this.handleSubmit.bind(_this);
     _this.handleDelete = _this.handleDelete.bind(_this);
+    _this.escFunction = _this.escFunction.bind(_this);
+    _this.handleMouseOver = _this.handleMouseOver.bind(_this);
+    _this.handleMouseOut = _this.handleMouseOut.bind(_this);
     return _this;
   }
 
   _createClass(NameForm, [{
+    key: 'escFunction',
+    value: function escFunction(event) {
+      if (event.code == "Escape") {
+        document.querySelector('#lang').classList.remove('show');
+      }
+
+      if (event.code == "ArrowDown") {
+        this.setState(function (prevState) {
+          return { arrowIndex: prevState.arrowIndex + 1 };
+        });
+        var index = this.state.arrowIndex;
+        if (index < this.state.langList.length) {
+          console.log(index);
+          document.querySelector('#lang > div:nth-child(' + index + ')').classList.add('active');
+
+          if (index != 1) {
+            index = index - 1;
+            document.querySelector('#lang > div:nth-child(' + index + ')').classList.remove('active');
+          }
+        }
+      }
+
+      if (event.code == "ArrowUp") {
+
+        var _index = this.state.arrowIndex;
+        if (_index > 0) {
+          console.log(_index);
+          document.querySelector('#lang > div:nth-child(' + _index + ')').classList.remove('active');
+
+          this.setState(function (prevState) {
+            return { arrowIndex: prevState.arrowIndex - 1 };
+          });
+
+          if (_index != 1) {
+            _index = _index - 1;
+            document.querySelector('#lang > div:nth-child(' + _index + ')').classList.add('active');
+          }
+        }
+      }
+
+      console.log(this.state.arrowIndex + ' ист');
+    }
+  }, {
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      document.addEventListener("keydown", this.escFunction, false);
+    }
+  }, {
+    key: 'componentWillUnmount',
+    value: function componentWillUnmount() {
+      document.removeEventListener("keydown", this.escFunction, false);
+    }
+  }, {
     key: 'handleChange',
     value: function handleChange(event) {
       this.setState({ value: event.target.value });
@@ -78,6 +134,21 @@ var NameForm = function (_React$Component) {
       });
     }
   }, {
+    key: 'handleMouseOver',
+    value: function handleMouseOver(item) {
+      // let index = this.state.arrowIndex
+      var index = 4;
+      document.querySelector('#lang > div:nth-child(' + index + ')').classList.add('active');
+    }
+  }, {
+    key: 'handleMouseOut',
+    value: function handleMouseOut(item) {
+      // let index = this.state.arrowIndex
+      var index = 4;
+      document.querySelector('#lang > div:nth-child(' + index + ')').classList.remove('active');
+      console.log('out');
+    }
+  }, {
     key: 'render',
     value: function render() {
       return React.createElement(
@@ -94,11 +165,26 @@ var NameForm = function (_React$Component) {
           React.createElement(
             'div',
             { id: 'selected-lang' },
-            React.createElement(SelectedList, { handleDelete: this.handleDelete, list: this.state.selectedLang }),
-            React.createElement('input', { type: 'text', id: 'dropdown', value: this.state.value, onChange: this.handleChange, onFocus: this.handleFocus })
+            React.createElement(SelectedList, {
+              handleDelete: this.handleDelete,
+              list: this.state.selectedLang
+            }),
+            React.createElement('input', {
+              type: 'text',
+              id: 'dropdown',
+              value: this.state.value,
+              onChange: this.handleChange,
+              onFocus: this.handleFocus
+            })
           )
         ),
-        React.createElement(DataList, { handleSubmit: this.handleSubmit, value: this.state.value, langList: this.state.langList })
+        React.createElement(DataList, {
+          handleSubmit: this.handleSubmit,
+          handleMouseOver: this.handleMouseOver,
+          handleMouseOut: this.handleMouseOut,
+          value: this.state.value,
+          langList: this.state.langList
+        })
       );
     }
   }]);
@@ -143,6 +229,15 @@ function DataList(props) {
     props.handleSubmit(item);
   }
 
+  function handleMouseOver(item, e) {
+    props.handleMouseOver(item);
+    console.log("hover");
+  }
+
+  function handleMouseOut(item, e) {
+    props.handleMouseOut(item);
+  }
+
   var variable = [];
   var filterVariable = [];
   var re = new RegExp('^' + props.value + '', 'i');
@@ -159,9 +254,18 @@ function DataList(props) {
   var listItems = filterVariable.map(function (item) {
     return React.createElement(
       'div',
-      { key: item.id, onClick: function onClick(e) {
+      {
+        key: item.id,
+        onClick: function onClick(e) {
           return handleClick(item, e);
-        } },
+        },
+        onMouseOver: function onMouseOver(e) {
+          return handleMouseOver(item, e);
+        },
+        onMouseOut: function onMouseOut(e) {
+          return handleMouseOut(item, e);
+        }
+      },
       item.value
     );
   });
